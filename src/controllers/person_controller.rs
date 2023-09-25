@@ -4,7 +4,6 @@ use actix_web::{
     web::{Data, Json, Path},
     HttpResponse,
 };
-
 #[get("/person/get_all")]
 pub  async  fn get_all_person(db: Data<PersonRepository>) -> HttpResponse {
     let people = db.get_all().await;
@@ -41,4 +40,31 @@ pub  async fn add_person(db: Data<PersonRepository>, new_person: Json<Person>) -
         Ok(user) => HttpResponse::Ok().json(user),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
     }
+}
+
+#[put("/person/edit/{id}")]
+pub async fn edit_person(db: Data<PersonRepository>, path: Path<String> , updated_person: Json<Person>) -> HttpResponse {
+    let id = path.into_inner();
+    let data = Person {
+        id: updated_person.id.to_owned(),
+        name: updated_person.name.to_owned(),
+        medsnoen: updated_person.medsnoen.to_owned()
+    };
+    let new_person = db.edit_person(id, data).await;
+    match new_person {
+        Ok(person) => HttpResponse::Ok().json(person),
+        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+    }
+}
+
+#[delete("/person/delete/{id}")]
+pub async fn delete_person_by_id(db: Data<PersonRepository>, path: Path<String>) -> HttpResponse {
+    let id = path.into_inner();
+    let deleted = db.delete_by_id(id).await;
+
+    match deleted {
+        Ok(deleted) => HttpResponse::Ok().json(deleted),
+        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+    }
+
 }

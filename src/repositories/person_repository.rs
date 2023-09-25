@@ -4,11 +4,10 @@ use dotenv::dotenv;
 
 use mongodb::{
     bson::{extjson::de::Error, oid::ObjectId, doc},
-    results::{ InsertOneResult },
-    Cursor,
+    results::{ InsertOneResult, UpdateResult} ,
     Client, Collection,
 };
-use futures::stream::{StreamExt, TryStreamExt};
+use futures::stream::TryStreamExt;
 
 use crate::models::person_model::Person;
 pub struct PersonRepository {
@@ -57,6 +56,27 @@ impl PersonRepository {
         
         let person = self.col.insert_one(new_doc, None).await.ok().expect("Error");
         Ok(person)
+    }
+
+    pub async fn edit_person(&self, id: String, updated_person: Person) -> Result<UpdateResult, Error> {
+        let id = ObjectId::parse_str(id).unwrap();
+        let filter = doc! { "_id": id };
+        let new_person_doc = doc! {
+            "$set": {
+                "id": updated_person.id,
+                "name": updated_person.name,
+                "medsnoen": updated_person.medsnoen 
+            },
+        };
+        let new_person = self.col.update_one(filter, new_person_doc, None).await.ok().expect("Error");
+        Ok(new_person)
+    }
+
+    pub async fn delete_by_id(&self, id: String) -> Result<String, Error> {
+        let id = ObjectId::parse_str(id).unwrap();
+        let filter = doc! {"_id": id};
+        self.col.delete_one(filter, None).await.ok().expect("Error");
+        Ok(format!("{} deleted", id))
     }
 }
 
