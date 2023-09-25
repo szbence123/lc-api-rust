@@ -39,7 +39,7 @@ pub  async fn add_diary(db: Data<GenericRepository<Diary>>, mut new_diary: Json<
 }
 
 #[put("/diary/edit/{id}")]
-pub async fn edit_diary(db: Data<GenericRepository<Diary>>, path: Path<String> , mut updated_diary: Json<Diary>) -> HttpResponse {
+pub async fn edit_diary(db: Data<GenericRepository<Diary>>, path: Path<String> , updated_diary: Json<Diary>) -> HttpResponse {
     let id = path.into_inner();
     let new_diary = db.edit_person(id, updated_diary.into_inner()).await;
     match new_diary {
