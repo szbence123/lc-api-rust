@@ -22,7 +22,6 @@ impl<T> GenericRepository<T> where T:  DeserializeOwned + Unpin + Send + Sync + 
             Ok(v) => v.to_string(),
             Err(_) => format!("Error loading env variable"),
         };
-        
         let client = Client::with_uri_str(uri).await.unwrap();
         let db = client.database(&db_name);
         let col: Collection<T> = db.collection(&db_col);
@@ -31,9 +30,7 @@ impl<T> GenericRepository<T> where T:  DeserializeOwned + Unpin + Send + Sync + 
     
     pub  async fn get_all(&self) ->  Result<Vec<T>, Error> {
         let mut cursors: Cursor<T> = self.col.find(None, None).await.ok().expect("Error");
-        
         let mut entries: Vec<T> = Vec::new();
-        
         while let Some(entry) = cursors.try_next().await.map_err(|e| println!("{}", e)).ok().expect("Error mapping through cursor") {
             entries.push(entry)
         }
@@ -57,7 +54,7 @@ impl<T> GenericRepository<T> where T:  DeserializeOwned + Unpin + Send + Sync + 
         let id = ObjectId::parse_str(id).unwrap();
         let filter = doc! { "_id": id };
         let doc = doc! {
-            "$set": mongodb::bson::to_document(&updated_entry).expect("eRRor")
+            "$set": mongodb::bson::to_document(&updated_entry).expect("Error")
         };
         let new_person = self.col.update_one(filter, doc, None).await.ok().expect("Error");
         Ok(new_person)
