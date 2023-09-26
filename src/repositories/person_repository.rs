@@ -50,8 +50,7 @@ impl PersonRepository {
     pub  async fn add_person(&self, new_person: Person) -> Result<InsertOneResult, Error> {
         let new_doc = Person {
             id: None,
-            name: new_person.name,
-            medsnoen: new_person.medsnoen,
+            name: new_person.name
         };
         
         let person = self.col.insert_one(new_doc, None).await.ok().expect("Error");
@@ -64,8 +63,7 @@ impl PersonRepository {
         let new_person_doc = doc! {
             "$set": {
                 "id": updated_person.id,
-                "name": updated_person.name,
-                "medsnoen": updated_person.medsnoen 
+                "name": updated_person.name
             },
         };
         let new_person = self.col.update_one(filter, new_person_doc, None).await.ok().expect("Error");

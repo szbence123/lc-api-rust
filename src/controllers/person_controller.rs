@@ -32,8 +32,7 @@ pub  async  fn get_person_by_id(db: Data<PersonRepository>, path: Path<String>) 
 pub  async fn add_person(db: Data<PersonRepository>, new_person: Json<Person>) -> HttpResponse {
     let data = Person {
         id: None,
-        name: new_person.name.to_owned(),
-        medsnoen: new_person.medsnoen.to_owned()
+        name: new_person.name.to_owned()
     };
     let person_detail = db.add_person(data).await;
     match person_detail { 
@@ -47,8 +46,7 @@ pub async fn edit_person(db: Data<PersonRepository>, path: Path<String> , update
     let id = path.into_inner();
     let data = Person {
         id: updated_person.id.to_owned(),
-        name: updated_person.name.to_owned(),
-        medsnoen: updated_person.medsnoen.to_owned()
+        name: updated_person.name.to_owned()
     };
     let new_person = db.edit_person(id, data).await;
     match new_person {
