@@ -10,5 +10,5 @@ pub  struct Diary {
     pub content: String,
     pub username: String,
     pub lang: String,
-    pub topic: String
+    pub sub: Option<Vec<Box<Diary>>>
 }

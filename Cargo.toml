@@ -10,8 +10,8 @@ serde = "1.0.136"
 serde_json = "1"
 dotenv = "0.15.0"
 futures = "0.3"
-utoipa = { version = "3", features = ["actix_extras"] }
-utoipa-swagger-ui = { version = "3", features = ["actix-web"] }
+utoipa = { version = "4.1.0", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "5.0.0", features = ["actix-web"] }
 
 [dependencies.mongodb]
 version = "2.2.0"
