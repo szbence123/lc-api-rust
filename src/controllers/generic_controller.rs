@@ -4,6 +4,7 @@ use actix_web::{
     HttpResponse,
 };
 use serde::de::DeserializeOwned;
+use crate::models::traits::date_time_trait::SetDateTime;
 
 
 pub  async  fn get_all<T>(db: Data<GenericRepository<T>>) -> HttpResponse where T: serde::Serialize + DeserializeOwned + Sync + Unpin + Send {
@@ -28,7 +29,7 @@ pub  async  fn get_by_id<T>(db: Data<GenericRepository<T>>, path: Path<String>) 
     }
 }
 
-pub  async fn add<T>(db: Data<GenericRepository<T>>, new_entry: Json<T>) -> HttpResponse where T: serde::Serialize + DeserializeOwned + Sync + Unpin + Send {
+pub  async fn add<T>(db: Data<GenericRepository<T>>, new_entry: Json<T>) -> HttpResponse where T: serde::Serialize + DeserializeOwned + Sync + Unpin + Send + SetDateTime {
     let entry_detail = db.add_entry(new_entry.into_inner()).await;
     match entry_detail { 
         Ok(entry) => HttpResponse::Ok().json(entry),
@@ -39,7 +40,7 @@ pub  async fn add<T>(db: Data<GenericRepository<T>>, new_entry: Json<T>) -> Http
 pub async fn edit<T>(db: Data<GenericRepository<T>>, path: Path<String> , updated_entry: Json<T>) -> HttpResponse where T: serde::Serialize + DeserializeOwned + Sync + Unpin + Send  {
     let full_path = path.split("/");
     let id = full_path.last().clone().unwrap().to_string();
-    let new_entry = db.edit_person(id, updated_entry.into_inner()).await;
+    let new_entry = db.edit_entry(id, updated_entry.into_inner()).await;
     match new_entry {
         Ok(entry) => HttpResponse::Ok().json(entry),
         Err(err) => HttpResponse::InternalServerError().json(err.to_string()),

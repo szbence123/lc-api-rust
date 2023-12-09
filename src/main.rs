@@ -4,10 +4,12 @@ mod controllers;
 
 use actix_web::{web::Data, App, HttpServer, web};
 use controllers::generic_controller::{get_all, get_by_id, edit, delete_by_id, add};
+use controllers::diary_controller::{add_sub_diary};
 use models::diary_model::Diary;
 use models::dream_model::Dream;
 use models::person_model::Person;
 use repositories::generic_repository::GenericRepository;
+use repositories::diary_repository::DiaryRepository;
 #[actix_web::main]
 
 async fn main() -> std::io::Result<()> {
@@ -15,11 +17,14 @@ async fn main() -> std::io::Result<()> {
     let db_person_data: Data<GenericRepository<Person>> = Data::new(person_rep);
 
 
-    let diary_rep = GenericRepository::<Diary>::init("LeehCross".to_string(), "Diaries".to_string()).await;
-    let db_diary_data: Data<GenericRepository<Diary>> = Data::new(diary_rep);
+    let diary_rep_gen = GenericRepository::<Diary>::init("LeehCross".to_string(), "Diaries".to_string()).await;
+    let db_diary_data_gen: Data<GenericRepository<Diary>> = Data::new(diary_rep_gen);
 
     let dream_rep= GenericRepository::<Dream>::init("LeehCross".to_string(), "Dreams".to_string()).await;
     let db_dream_data: Data<GenericRepository<Dream>> = Data::new(dream_rep);
+
+    let diary_rep = DiaryRepository::<Diary>::init("LeehCross".to_string(), "Diaries".to_string()).await;
+    let db_diary_data: Data<DiaryRepository<Diary>> = Data::new(diary_rep);
 
     HttpServer::new(move || {
         App::new()
@@ -32,6 +37,8 @@ async fn main() -> std::io::Result<()> {
             .route("/person/delete/{id}",   web::delete() .to(delete_by_id::  <Person>))
             /* DIARY COLLECTION */
             .app_data(db_diary_data.clone())
+            .route("/diary/insert_sub/{id}",      web::put()     .to(add_sub_diary::  <Diary>))
+            .app_data(db_diary_data_gen.clone())
             .route("/diary/get_all",        web::get()    .to(get_all::       <Diary>))
             .route("/diary/get/{id}",       web::get()    .to(get_by_id::     <Diary>))
             .route("/diary/add",            web::post()   .to(add::           <Diary>))

@@ -9,6 +9,7 @@ use mongodb::{
 };
 use futures::stream::TryStreamExt;
 use serde::de::DeserializeOwned;
+use crate::models::traits::date_time_trait::SetDateTime;
 
 pub struct GenericRepository<T> {
     col: Collection<T>,
@@ -34,7 +35,6 @@ impl<T> GenericRepository<T> where T:  DeserializeOwned + Unpin + Send + Sync + 
         while let Some(entry) = cursors.try_next().await.map_err(|e| println!("{}", e)).ok().expect("Error mapping through cursor") {
             entries.push(entry)
         }
-        
         Ok(entries)
     }
     
@@ -45,12 +45,13 @@ impl<T> GenericRepository<T> where T:  DeserializeOwned + Unpin + Send + Sync + 
         Ok(entry.unwrap())
     }
     
-    pub  async fn add_entry(&self, new_entry: T) -> Result<InsertOneResult, Error> {        
+    pub  async fn add_entry(&self, mut new_entry: T) -> Result<InsertOneResult, Error> where T: SetDateTime {
+        new_entry.set_date_time();
         let entry = self.col.insert_one(new_entry, None).await.map_err(|e| println!("{}", e)).ok().expect("Error");
         Ok(entry)
     }
 
-    pub async fn edit_person(&self, id: String, updated_entry: T) -> Result<UpdateResult, Error> {
+    pub async fn edit_entry(&self, id: String, updated_entry: T) -> Result<UpdateResult, Error> {
         let id = ObjectId::parse_str(id).unwrap();
         let filter = doc! { "_id": id };
         let doc = doc! {
