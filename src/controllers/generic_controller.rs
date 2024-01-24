@@ -4,7 +4,7 @@ use actix_web::{
     HttpResponse,
 };
 use serde::de::DeserializeOwned;
-use crate::models::traits::date_time_trait::SetDateTime;
+use crate::models::traits::generic_traits::SetDateTime;
 
 
 pub  async  fn get_all<T>(db: Data<GenericRepository<T>>) -> HttpResponse where T: serde::Serialize + DeserializeOwned + Sync + Unpin + Send {

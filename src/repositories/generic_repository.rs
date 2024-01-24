@@ -9,7 +9,7 @@ use mongodb::{
 };
 use futures::stream::TryStreamExt;
 use serde::de::DeserializeOwned;
-use crate::models::traits::date_time_trait::SetDateTime;
+use crate::models::traits::generic_traits::SetDateTime;
 
 pub struct GenericRepository<T> {
     col: Collection<T>,

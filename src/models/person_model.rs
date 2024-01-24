@@ -1,7 +1,7 @@
 use mongodb::bson::DateTime;
 use mongodb::bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
-use crate::models::traits::date_time_trait::SetDateTime;
+use crate::models::traits::generic_traits::SetDateTime;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub  struct Person {
