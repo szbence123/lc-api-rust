@@ -1,14 +1,11 @@
 use std::env;
-use std::fmt::Alignment::Left;
 use std::str::FromStr;
-use actix_web::cookie::time::error::InvalidFormatDescription::UnclosedOpeningBracket;
 
 extern crate dotenv;
 use dotenv::dotenv;
 
 use mongodb::{Client, Collection};
 use mongodb::{bson::{doc, oid::ObjectId}, error::Error, results::UpdateResult};
-use crate::models::traits::generic_traits::AddSubIds;
 
 
 pub struct DiaryRepository<Diary> {
@@ -28,13 +25,12 @@ impl<Diary> DiaryRepository<Diary> where Diary:  serde::Serialize {
         DiaryRepository { col }
     }
 
-    pub async fn insert_sub_diary(&self, parent_diary_id: String, mut sub_diary: Diary) -> Result<UpdateResult, Error> where Diary:  serde::Serialize + AddSubIds {
-        sub_diary.add_sub_ids();
+    pub async fn insert_sub_diary(&self, parent_diary_id: String, sub_diary: Diary) -> Result<UpdateResult, Error> where Diary:  serde::Serialize  {
         let parent_id = ObjectId::from_str(&parent_diary_id).expect("Error converting to ObjectId");
         // Build the update query
         let filter = doc! { "_id": parent_id };
         
-        let er = self.col.find(filter.clone(), None).await.map_err(|e| println!("{}", e)).ok().expect("");
+        let _er = self.col.find(filter.clone(), None).await.map_err(|e| println!("{}", e)).ok().expect("");
         
         let update = doc! { "$push": { "sub": mongodb::bson::to_document(&sub_diary).expect("Error") } };
 
