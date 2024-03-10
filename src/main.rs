@@ -1,7 +1,6 @@
 mod models;
 mod repositories;
 mod controllers;
-
 use actix_web::{web::Data, App, HttpServer, web};
 use controllers::generic_controller::{get_all, get_by_id, edit, delete_by_id, add};
 use controllers::diary_controller::{add_sub_diary};
